@@ -32,11 +32,16 @@ public class WebhookController {
     public String newNotification(@RequestBody String data) throws IOException {
         System.out.println(data);
         GithubNotificationResponse response = gson.fromJson(data, GithubNotificationResponse.class);
-        if(response.getAction()==null || !"created".equals(response.getAction()))
+        if(response.getAction()!=null
+                || "opened".equals(response.getAction())
+                || "created".equals(response.getAction())){
+            WechatWebhookRequest request = populateReportFromNotification(response);
+            notifyWechatWebhook(request);
+            return "Pushed!";
+        }
+        else{
             return "ignored!";
-        WechatWebhookRequest request = populateReportFromNotification(response);
-        notifyWechatWebhook(request);
-        return "Pushed!";
+        }
     }
 
     private WechatWebhookRequest populateReportFromNotification(GithubNotificationResponse response) {
@@ -48,7 +53,7 @@ public class WebhookController {
         String host = "qyapi.weixin.qq.com";
         HttpClient httpClient = new HttpClient();
         httpClient.getHostConfiguration().setHost(host, 443, "https");
-        HttpMethod method = postMethod(url, gson.toJson(request));
+        HttpMethod method = postMethod(url, request.toJson());
         httpClient.executeMethod(method);
         String response = method.getResponseBodyAsString();
         System.out.println(response);
@@ -57,17 +62,9 @@ public class WebhookController {
 
     private static HttpMethod postMethod(String url, String body) throws IOException {
         PostMethod post = new PostMethod(url);
-        post.setRequestHeader("Content-Type","application/json");
+        post.setRequestHeader("Content-Type","application/json;charset=utf-8");
         post.setRequestBody(body);
         post.releaseConnection();
         return post;
-    }
-
-    private WechatWebhookRequest generateTestRequest() {
-        WechatWebhookRequest request = new WechatWebhookRequest("text", "测试消息请忽略。。。\n实时新增用户反馈<font color=\"warning\">132例</font>，请相关同事注意。\n" +
-                "         >类型:<font color=\"comment\">用户反馈</font>\n" +
-                "         >普通用户反馈:<font color=\"comment\">117例</font>\n" +
-                "         >VIP用户反馈:<font color=\"comment\">15例</font>");
-        return request;
     }
 }

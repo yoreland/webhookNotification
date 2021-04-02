@@ -1,13 +1,15 @@
 package io.agora.github.notification.tdo;
 
+import com.google.gson.Gson;
+
 public class WechatWebhookRequest {
     private String msgtype;
-    private Text text;
+    private Text markdown;
 
     public WechatWebhookRequest(String msg, String content){
         this.msgtype = msg;
-        this.text = new Text();
-        this.text.setContent(content);
+        this.markdown = new Text();
+        this.markdown.setContent(content);
     }
 
     public String getMsgtype() {
@@ -18,12 +20,12 @@ public class WechatWebhookRequest {
         this.msgtype = msgtype;
     }
 
-    public Text getText() {
-        return text;
+    public Text getMarkdown() {
+        return markdown;
     }
 
-    public void setText(Text text) {
-        this.text = text;
+    public void setMarkdown(Text markdown) {
+        this.markdown = markdown;
     }
 
     class Text {
@@ -36,6 +38,13 @@ public class WechatWebhookRequest {
         public void setContent(String content) {
             this.content = content;
         }
+    }
+
+    public String toJson(){
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        System.out.println("parse notification josn: " + json);
+        return json;
     }
 }
 

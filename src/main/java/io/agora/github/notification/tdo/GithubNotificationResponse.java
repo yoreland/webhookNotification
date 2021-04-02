@@ -157,8 +157,9 @@ public class GithubNotificationResponse {
 
 
     public String getFormatedMessage() {
-        String content = String.format("%s just report a new issue for %s, please check!\n> Issue Title:[%s](%s)"
-                , sender.login, repository.full_name, issue.title, issue.html_url);
+        String content = String.format("%s just %s a new issue for %s, please check!\nIssue Title:[%s](%s)"
+                , sender.login, action.equals("opened")?"report":"reply", repository.full_name, issue.title, issue.html_url);
+        System.out.println("Start to push message, content is :" + content);
         return content;
     }
 }
