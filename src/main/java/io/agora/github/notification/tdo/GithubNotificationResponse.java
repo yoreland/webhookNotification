@@ -8,6 +8,14 @@ public class GithubNotificationResponse {
     private Repository repository;
     private User sender;
 
+    public String getRepoName() {
+        return repository.getFull_name();
+    }
+
+    public String getReplier() {
+        return sender.getLogin();
+    }
+
     public String getAction() {
         return action;
     }
@@ -157,9 +165,8 @@ public class GithubNotificationResponse {
 
 
     public String getFormatedMessage() {
-        String content = String.format("%s just %s a new issue for %s, please check!\nIssue Title:[%s](%s)"
-                , sender.login, action.equals("opened")?"report":"reply", repository.full_name, issue.title, issue.html_url);
-        System.out.println("Start to push message, content is :" + content);
+        String content = String.format("%s just %s issue for %s, please check!\nIssue Title:[%s](%s)"
+                , sender!=null?sender.login:"unknown user", "opened".equals(action)?"report a new ":"reply an", repository.full_name, issue.title, issue.html_url);
         return content;
     }
 }
