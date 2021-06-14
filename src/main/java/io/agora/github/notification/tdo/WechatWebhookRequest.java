@@ -7,13 +7,13 @@ import java.util.List;
 
 public class WechatWebhookRequest {
     private String msgtype;
-    private Text markdown;
+    private Text text;
 
 
     public WechatWebhookRequest(String msg, String content){
         this.msgtype = msg;
-        this.markdown = new Text();
-        this.markdown.setContent(content);
+        this.text = new Text();
+        this.text.setContent(content);
     }
 
     public String getMsgtype() {
@@ -24,16 +24,16 @@ public class WechatWebhookRequest {
         this.msgtype = msgtype;
     }
 
-    public Text getMarkdown() {
-        return markdown;
+    public Text getText() {
+        return text;
     }
 
     public void mention(String owner){
-        markdown.mentioned_list.add(owner);
+        text.mentioned_list.add(owner);
     }
 
-    public void setMarkdown(Text markdown) {
-        this.markdown = markdown;
+    public void setText(Text text) {
+        this.text = text;
     }
 
     class Text {

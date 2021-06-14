@@ -20,6 +20,10 @@ public class GithubNotificationResponse {
         return action;
     }
 
+    public boolean isEmpty(){
+        return issue == null || issue.html_url == null || issue.title == null;
+    }
+
     public void setAction(String action) {
         this.action = action;
     }
@@ -64,7 +68,7 @@ public class GithubNotificationResponse {
         this.sender = sender;
     }
 
-    class Issue {
+    static class Issue {
         private String url;
         private String repository_url;
         private String labels_url;
@@ -121,7 +125,7 @@ public class GithubNotificationResponse {
         }
     }
 
-    class Repository {
+    static class Repository {
         private String name;
         private String full_name;
         private User owner;
@@ -151,7 +155,7 @@ public class GithubNotificationResponse {
         }
     }
 
-    class User {
+    static class User {
         private String login;
 
         public String getLogin() {
@@ -164,9 +168,19 @@ public class GithubNotificationResponse {
     }
 
 
-    public String getFormatedMessage() {
-        String content = String.format("%s just %s issue for %s, please check!\nIssue Title:[%s](%s)"
-                , sender!=null?sender.login:"unknown user", "opened".equals(action)?"report a new ":"reply an", repository.full_name, issue.title, issue.html_url);
-        return content;
+    public String getFormattedMessage(boolean isStaff) {
+        if(isStaff){
+            return String.format("%s just reply an issue: %s\nFor %s"
+                    , sender!=null?sender.login:"unknown user"
+                    , issue!=null?issue.title:""
+                    , issue!=null?issue.html_url:"");
+        }
+        else{
+            return String.format("%s just %s issue: %s\nPlease check: %s"
+                    , sender!=null?sender.login:"unknown user"
+                    , "opened".equals(action)?"report a new ":"reply an"
+                    , issue!=null?issue.title:""
+                    , issue!=null?issue.html_url:"");
+        }
     }
 }

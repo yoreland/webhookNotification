@@ -14,8 +14,6 @@ import org.apache.commons.httpclient.HttpClient;
 
 import java.io.IOException;
 
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
 @RestController
 @RequestMapping("/")
 public class WebhookController {
@@ -32,7 +30,7 @@ public class WebhookController {
         logger.info("ignored repo list:");
         propertyService.getIgnoredRepoList().forEach(s -> logger.info(s));
         logger.info("ignored replier list:");
-        propertyService.getIngoredReplierList().forEach(s -> logger.info(s));
+        propertyService.getStaffList().forEach(s -> logger.info(s));
         return "OK!";
     }
 
@@ -52,16 +50,19 @@ public class WebhookController {
     }
 
     private boolean isFilteredMessage(GithubNotificationResponse message){
+        if(message.isEmpty())
+            return true;
         if(propertyService.getIgnoredRepoList().contains(message.getRepoName()))
             return true;
-        if(propertyService.getIngoredReplierList().contains(message.getReplier()))
+        if(propertyService.getBotReplierList().contains(message.getReplier()))
             return true;
         return !"opened".equals(message.getAction()) && !"created".equals(message.getAction());
     }
 
     private WechatWebhookRequest populateReportFromNotification(GithubNotificationResponse response) {
-        logger.info("start to push notification to wechat, content is {}", response.getFormatedMessage());
-        return new WechatWebhookRequest("markdown", response.getFormatedMessage());
+        boolean isStaffReplied = propertyService.getStaffList().contains(response.getReplier());
+        logger.info("start to push notification to wechat, content is {}", response.getFormattedMessage(isStaffReplied));
+        return new WechatWebhookRequest("text", response.getFormattedMessage(isStaffReplied));
     }
 
     private void notifyWechatWebhook(WechatWebhookRequest request) throws IOException {

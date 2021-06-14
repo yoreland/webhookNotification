@@ -28,8 +28,12 @@ public class PropertyService {
         return Arrays.asList(properties.getProperty("ignored").split(","));
     }
 
-    public List<String> getIngoredReplierList(){
+    public List<String> getStaffList(){
         return Arrays.asList(properties.getProperty("staff").split(","));
+    }
+
+    public List<String> getBotReplierList(){
+        return Arrays.asList(properties.getProperty("bot_replier").split(","));
     }
 
     public String getWebHookKey(){
